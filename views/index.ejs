@@ -14,13 +14,14 @@
       </div>
       <div class="card-body" style="padding-left: 0; padding-right: 0; padding-bottom: 0;">
 
-        <form action="" method="get" style="padding: 16px 16px 0px 16px;">
+        <form action="" id="searchForm" method="get" style="padding: 16px 16px 0px 16px;">
           <div class="row mb-2">
             <div class="col-2">
               <label for="name" class="col-form-label">Name</label>
             </div>
             <div class="col-10">
-              <input type="text" name="name" class="form-control" placeholder="insert your name">
+              <input type="text" name="name" class="form-control" placeholder="insert your name"
+                value="<%= filter.name %>">
             </div>
           </div>
 
@@ -29,7 +30,8 @@
               <label for="height" class="col-form-label">Height</label>
             </div>
             <div class="col-10">
-              <input type="text" name="height" class="form-control" placeholder="insert your height">
+              <input type="text" name="height" class="form-control" placeholder="insert your height"
+                value="<%= filter.height %>">
             </div>
           </div>
 
@@ -38,7 +40,8 @@
               <label for="weight" class="col-form-label">Weight</label>
             </div>
             <div class="col-10">
-              <input type="text" name="weight" class="form-control" placeholder="insert your weight">
+              <input type="text" name="weight" class="form-control" placeholder="insert your weight"
+                value="<%= filter.weight %>">
             </div>
           </div>
 
@@ -47,13 +50,13 @@
               <label for="birthdate">Date</label>
             </div>
             <div class="col-4">
-              <input type="date" class="form-control" name="startDate">
+              <input type="date" class="form-control" name="startDate" value="<%= filter.startDate %>">
             </div>
             <div class="col-2">
               <p class="text-center"> s.d. </p>
             </div>
             <div class="col-4">
-              <input type="date" class="form-control" name="endDate">
+              <input type="date" class="form-control" name="endDate" value="<%= filter.endDate %>">
             </div>
           </div>
 
@@ -63,9 +66,9 @@
             </div>
             <div class="col-10">
               <select id="married" name="married" class="form-control">
-                <option value="">--select married--</option>
-                <option value=0>Not Yet</option>
-                <option value=1>Yes</option>
+                <option value="" <%=!filter.married ? 'selected' : '' %>>--select married--</option>
+                <option value=0 <%=filter.married && filter.married==='0' ? 'selected' : '' %>>Not Yet</option>
+                <option value=1 <%=filter.married && filter.married==='1' ? 'selected' : '' %>>Yes</option>
               </select>
             </div>
           </div>
@@ -76,20 +79,22 @@
             </div>
             <div class="col-10">
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="operation" id="operationOr" value="or" checked>
+                <input class="form-check-input" type="radio" name="operation" id="operationOr" value="OR"
+                  <%=filter.operation==="OR" || !filter.operation ? 'checked' : '' %>>
                 <label class="form-check-label" for="operationOr">OR</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="operation" id="operationAnd" value="and">
+                <input class="form-check-input" type="radio" name="operation" id="operationAnd" value="AND"
+                  <%=filter.operation==="AND" ? 'checked' : '' %>>
                 <label class="form-check-label" for="operationAnd">AND</label>
               </div>
             </div>
 
           </div>
           <div class="row mt-3" style="margin-left: 0px;">
-            <input type="submit" class="btn btn-info btn-sm" style="width: 80px; margin-right: 5px;"
+            <input type="submit" class="btn btn-info btn-sm" style="width: 90px; margin-right: 5px;"
               value="Search"></input>
-            <input type="reset" class="btn btn-warning btn-sm" style="width: 80px;" value="Reset"></input>
+            <a href="/" class="btn btn-warning btn-sm" style="width: 90px;">Reset</a>
           </div>
         </form>
 
@@ -111,7 +116,7 @@
             <% rows.forEach((item, index)=> { %>
 
               <td>
-                <%= index + 1 %>
+                <%= (page - 1) * 5 + index + 1 %>
               </td>
               <td>
                 <%= item.name %>
@@ -132,10 +137,10 @@
                 <a href="/edit/<%= item.id %>" class="btn btn-success btn-sm">Update</a>
                 <!-- <button onclick="userConfirm('<%= item.name %>',<%= index %>)"
                    class="btn btn-danger btn-sm">Delete</button> -->
-                
+
                 <button onclick="showConfirmationModal('<%= item.name %>',<%= item.id %>)"
                   class="btn btn-danger btn-sm">Delete</button>
-                   
+
                 <!-- <button class="btn btn-danger btn-sm">Delete</button> -->
               </td>
               </tr>
@@ -145,8 +150,32 @@
 
 
       </div>
-      <div class="card-footer">
-        <a href="/add" class="btn btn-primary btn-sm" style="width: 80px;">Add</a>
+      <div class="card-footer pb-0">
+        <div class="row">
+          <div class="col">
+            <a href="/add" class="btn btn-primary btn-sm" style="width: 90px;">Add</a>
+          </div>
+          <div class="col">
+            <nav aria-label="Page navigation">
+              <ul class="pagination d-flex justify-content-end">
+                <a class="page-link" href="/?page=1<%=filterPage%>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+                <% for(let i=1; i <=pages; i++) { %>
+
+                  <li class="page-item"><a class="page-link <%= page==i ? `active` : `` %>"
+                      href="/?page=<%=i%><%=filterPage%>">
+                      <%=i%>
+                    </a></li>
+
+                  <% } %>
+                    <a class="page-link" href="/?page=<%=pages%><%=filterPage%>" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+              </ul>
+            </nav>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -165,8 +194,9 @@
           <p id="modal-paragraph">Apakah kamu yakin akang menghapus data NAMA?</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" style="width: 80px;">No</button>
-          <button type="button" class="btn btn-warning btn-sm" id="confirmButton" style="width: 80px;">Yes</button>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal"
+            style="width: 90px;">No</button>
+          <button type="button" class="btn btn-warning btn-sm" id="confirmButton" style="width: 90px;">Yes</button>
         </div>
       </div>
     </div>
@@ -198,15 +228,6 @@
       });
     }
 
-  </script>
-
-  <script>
-    function userConfirm(name, index) {
-      const userConfirmed = confirm(`Apakah kamu yakin akan menghapus data '${name}'?`);
-      if (userConfirmed) {
-        window.location.href = `/delete/${index}`
-      }
-    }
   </script>
 </body>
 
