@@ -132,6 +132,8 @@ module.exports = function (db) {
             if (err) {
                 console.error(err);
             }
+            console.log(page, pages)
+            console.log(parseInt(page) === pages)
             res.render('index', { rows: data, pages, page, filter, filterPage })
         })
     })
